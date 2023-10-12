@@ -351,7 +351,10 @@ function setLanguage(_lang) {
   const lang = _lang.toLowerCase();
   // fetch('texts/random.json')
   fetch("/texts/words.json")
-    .then(response => response.json())
+    .then(response => {
+      console.log(response);
+      return response.json();
+    })
     .then(json => {
       // if (typeof json[lang] !== 'undefined') {
       //   randomWords = json[lang];
@@ -370,8 +373,9 @@ function setLanguage(_lang) {
       //   console.error(`language ${lang} is undefine`);
       // }
 
-      // randomWords = json.filter(word => word.length < 6)
-      randomWords = json.filter(word => word.includes("s") && word.includes("a") && word.length >= 7)
+      randomWords = json.filter(word => word.length < 6)
+      // randomWords = json.filter(word => word.includes("s") && word.includes("a") && word.length >= 7)
+
       console.log(randomWords)
       setText();
     })
