@@ -350,7 +350,7 @@ function setTheme(_theme) {
 function setLanguage(_lang) {
   const lang = _lang.toLowerCase();
   // fetch('texts/random.json')
-  fetch("/texts/words.json")
+  fetch("texts/words.json")
     .then(response => {
       console.log(response);
       return response.json();
