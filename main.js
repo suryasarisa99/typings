@@ -1,11 +1,13 @@
 // Get document element
 const textDisplay = document.querySelector('#text-display');
 const inputField = document.querySelector('#input-field');
+const inputs = document.querySelectorAll("#settings input")
 
 // Initialize typing mode variables
 let typingMode = 'wordcount';
 let wordCount;
 let timeCount;
+let randomType = "random-word"
 
 // Initialize dynamic variables
 let randomWords = [];
@@ -17,6 +19,51 @@ let timer;
 let timerActive = false;
 let punctuation = false;
 
+
+// my code
+let alpha = "abcdefghijklmnopqrstuvwxy"
+let capAlpha = "ABCDEFGHIJKLMNOPQRSTUVWXY"
+let numbers = "0123456789"
+let symbols = `~!@#$%^&*-_+="':;,.<>?/()[]{}`
+
+const randAlpha = () => alpha[parseInt(Math.random() * alpha.length)]
+const randCapAlpha = () => capAlpha[parseInt(Math.random() * capAlpha.length)]
+const randNum = () => numbers[parseInt(Math.random() * numbers.length)]
+const randSym = () => symbols[parseInt(Math.random() * symbols.length)]
+
+function makeWord(includeNum = false, includeSym = false, includeBra = false) {
+  let wordLen = parseInt(Math.random() * 3) + 3
+  const randoms = [randAlpha, randAlpha, randNum, randSym]
+  let randFun;
+
+  switch (randomType) {
+    case "random-word": {
+      return randomWords[Math.floor(Math.random() * randomWords.length)];
+    }
+    case "char": randFun = randAlpha; break;
+    case "num": randFun = randNum; break;
+    case "sym": randFun = randSym; break;
+  }
+
+  let word = ""
+  while (word.length < wordLen)
+    word += randFun()
+
+  return word;
+}
+
+console.log(inputs)
+
+inputs.forEach(input => {
+  document.addEventListener('change', (e) => {
+    console.log(e.target.value)
+    randomType = e.target.value
+    setText();
+    setCookie('randomType', e.target.value, 90)
+  })
+})
+
+
 // Get cookies
 getCookie('theme') === '' ? setTheme('light') : setTheme(getCookie('theme'));
 getCookie('language') === '' ? setLanguage('english') : setLanguage(getCookie('language'));
@@ -24,6 +71,8 @@ getCookie('wordCount') === '' ? setWordCount(50) : setWordCount(getCookie('wordC
 getCookie('timeCount') === '' ? setTimeCount(60) : setTimeCount(getCookie('timeCount'));
 getCookie('typingMode') === '' ? setTypingMode('wordcount') : setTypingMode(getCookie('typingMode'));
 getCookie('punctuation') === '' ? setPunctuation('false') : setPunctuation(getCookie('punctuation'));
+getCookie('randomType') === '' ? randomType = 'random-word' : randomType = getCookie("randomType")
+
 
 // Find a list of words and display it to textDisplay
 function setText(e) {
@@ -48,12 +97,20 @@ function setText(e) {
       textDisplay.innerHTML = '';
       if (!keepWordList) {
         wordList = [];
+        // while (wordList.length < wordCount) {
+        //   const randomWord = randomWords[Math.floor(Math.random() * randomWords.length)];
+        //   if (wordList[wordList.length - 1] !== randomWord || wordList[wordList.length - 1] === undefined || getCookie('language') === 'dots') {
+        //     wordList.push(randomWord);
+        //   }
+        // }
+
         while (wordList.length < wordCount) {
-          const randomWord = randomWords[Math.floor(Math.random() * randomWords.length)];
+          const randomWord = makeWord();
           if (wordList[wordList.length - 1] !== randomWord || wordList[wordList.length - 1] === undefined || getCookie('language') === 'dots') {
             wordList.push(randomWord);
           }
         }
+
       }
       break;
 
@@ -239,10 +296,11 @@ function showResult() {
 
 // Command actions
 document.addEventListener('keydown', e => {
+  console.log(e.altKey)
   // Modifiers Windows: [Alt], Mac: [Cmd + Ctrl]
   if (e.altKey || (e.metaKey && e.ctrlKey)) {
     // [mod + t] => Change the theme
-    if (e.key === 't') {
+    if (e.key === 'k') {
       setTheme(inputField.value);
     }
     // [mod + l] => Change the language
@@ -260,7 +318,7 @@ document.addEventListener('keydown', e => {
       setPunctuation(inputField.value);
     }
   } else if (!document.querySelector('#theme-center').classList.contains('hidden')) {
-    if (e.key === 'Escape'){
+    if (e.key === 'Escape') {
       hideThemeCenter();
       inputField.focus();
     }
@@ -291,25 +349,31 @@ function setTheme(_theme) {
 
 function setLanguage(_lang) {
   const lang = _lang.toLowerCase();
-  fetch('texts/random.json')
+  // fetch('texts/random.json')
+  fetch("/texts/words.json")
     .then(response => response.json())
     .then(json => {
-      if (typeof json[lang] !== 'undefined') {
-        randomWords = json[lang];
-        setCookie('language', lang, 90);
+      // if (typeof json[lang] !== 'undefined') {
+      //   randomWords = json[lang];
+      //   setCookie('language', lang, 90);
 
-        if (lang === "arabic") {
-            textDisplay.style.direction = "rtl"
-            inputField.style.direction = "rtl"
-        } else {
-            textDisplay.style.direction = "ltr"
-            inputField.style.direction = "ltr"
-        }
+      //   if (lang === "arabic") {
+      //     textDisplay.style.direction = "rtl"
+      //     inputField.style.direction = "rtl"
+      //   } else {
+      //     textDisplay.style.direction = "ltr"
+      //     inputField.style.direction = "ltr"
+      //   }
 
-        setText();
-      } else {
-        console.error(`language ${lang} is undefine`);
-      }
+      //   setText();
+      // } else {
+      //   console.error(`language ${lang} is undefine`);
+      // }
+
+      // randomWords = json.filter(word => word.length < 6)
+      randomWords = json.filter(word => word.includes("s") && word.includes("a") && word.length >= 7)
+      console.log(randomWords)
+      setText();
     })
     .catch(err => console.error(err));
 }
@@ -392,8 +456,8 @@ function getCookie(cname) {
 }
 
 showAllThemes();
-function showAllThemes(){
-    fetch(`themes/theme-list.json`)
+function showAllThemes() {
+  fetch(`themes/theme-list.json`)
     .then(response => {
       if (response.status === 200) {
         response
@@ -402,7 +466,7 @@ function showAllThemes(){
             let themes = JSON.parse(body);
             let keys = Object.keys(themes);
             let i;
-            for(i = 0;i < keys.length; i ++){
+            for (i = 0; i < keys.length; i++) {
 
               let theme = document.createElement('div');
               theme.setAttribute('class', 'theme-button');
@@ -419,10 +483,10 @@ function showAllThemes(){
                 }
               })
 
-              if(themes[keys[i]]['customHTML'] != undefined){
+              if (themes[keys[i]]['customHTML'] != undefined) {
                 theme.style.background = themes[keys[i]]['background'];
                 theme.innerHTML = themes[keys[i]]['customHTML']
-              }else{
+              } else {
                 theme.textContent = keys[i];
                 theme.style.background = themes[keys[i]]['background'];
                 theme.style.color = themes[keys[i]]['color'];
@@ -449,11 +513,22 @@ document.getElementById('show-themes').addEventListener('keydown', (e) => {
 function showThemeCenter() {
   document.getElementById('theme-center').classList.remove('hidden');
   document.getElementById('command-center').classList.add('hidden');
+  document.getElementById('settings').classList.add('hidden');
+}
+function showSettingsCenter() {
+  document.getElementById('theme-center').classList.add('hidden');
+  document.getElementById('command-center').classList.add('hidden');
+  document.getElementById('settings').classList.remove('hidden');
 }
 
 function hideThemeCenter() {
   document.getElementById('theme-center').classList.add('hidden');
   document.getElementById('command-center').classList.remove('hidden');
+  // document.getElementById('settings-center').classList.remove('hidden');
 }
-
+function hideSettingCenter() {
+  document.getElementById('command-center').classList.remove('hidden');
+  document.getElementById('theme-center').classList.add('hidden');
+  document.getElementById('settings').classList.add('hidden');
+}
 

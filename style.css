@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap');
+@import url("https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap");
 
 body {
   margin: 0;
@@ -23,6 +23,7 @@ body {
 #header {
   margin: 0;
   margin: 1.2rem 0 0 0;
+  margin-bottom: 20px;
   line-height: 2rem;
 }
 
@@ -36,7 +37,8 @@ body {
   transform: translateY(-2vh);
 }
 
-#theme-area{
+#theme-area,
+.theme-area {
   margin-top: 1rem;
   padding: 1.4rem 1rem;
   border-radius: 0.4rem;
@@ -46,7 +48,18 @@ body {
   grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 
-#theme-center{
+.options-area {
+  display: flex;
+  flex-direction: column;
+  border-radius: 15px;
+  gap: 25px;
+  margin: 25px;
+  padding: 32px 40px;
+  background-color: #232533;
+}
+
+#theme-center,
+#settings {
   margin: 0 0.4rem;
   width: 100%;
   max-width: 40rem;
@@ -56,15 +69,15 @@ body {
   transform: translateY(-2vh);
 }
 
-.theme-button{
+.theme-button {
   padding: 1rem 0;
   background: gray;
   border-radius: 0.4rem;
   text-align: center;
-  font-size: .8rem;
+  font-size: 0.8rem;
 }
 
-.theme-button:hover{
+.theme-button:hover {
   cursor: pointer;
   box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.2);
 }
@@ -109,26 +122,46 @@ body {
   display: flex;
 }
 
-#footer *{
+#footer * {
   text-decoration: none;
-  margin: 0 .5rem;
+  margin: 0 0.5rem;
   color: inherit;
 }
 
-#footer .button{
+#footer .button {
   cursor: pointer;
 }
 
-#footer a:visited{
+#footer a:visited {
   color: unset;
 }
 
-.hidden{ 
+.hidden {
   display: none !important;
 }
 
-body, #header, #left-wing, #right-wing, #typing-area, #theme-area, #theme-center,
-#text-display, #redo-button, #footer, #highlight {
-  transition: all .4s ease-in-out 0s;
+body,
+#header,
+#left-wing,
+#right-wing,
+#typing-area,
+#theme-area,
+#theme-center,
+#text-display,
+#redo-button,
+#footer,
+#highlight {
+  transition: all 0.4s ease-in-out 0s;
+}
 
+#settings .options div {
+  display: flex;
+  margin: 0;
+  justify-content: center;
+  color: white;
+  accent-color: red;
+}
+#settings div p {
+  margin: 0;
+  color: white;
 }

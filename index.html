@@ -2,26 +2,32 @@
 <html lang="en">
   <head>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-126815322-3"></script>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-126815322-3"
+    ></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag() {
         dataLayer.push(arguments);
       }
-      gtag('js', new Date());
+      gtag("js", new Date());
 
-      gtag('config', 'UA-126815322-3');
+      gtag("config", "UA-126815322-3");
     </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>typings</title>
-    <meta name="description" content="typings.gg is a sleek and modern typing test website. it support many custom themes" />
+    <meta
+      name="description"
+      content="typings.gg is a sleek and modern typing test website. it support many custom themes"
+    />
     <link rel="stylesheet" href="style.css" />
     <link id="theme" rel="stylesheet" href="themes/light.css" />
   </head>
   <body>
-    <h2 id="header">typings</h2>
+    <h2 id="header">Surya Typing</h2>
     <div id="command-center" class="">
       <div class="bar">
         <div id="left-wing">
@@ -53,8 +59,40 @@
       <div id="typing-area">
         <div id="text-display"></div>
         <div class="bar">
-          <input id="input-field" type="text" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off" tabindex="1"/>
-          <button id="redo-button" onclick="setText(event)" tabindex="2">redo</button>
+          <input
+            id="input-field"
+            type="text"
+            spellcheck="false"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            tabindex="1"
+          />
+          <button id="redo-button" onclick="setText(event)" tabindex="2">
+            redo
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="settings" class="hidden">
+      <div id="left-wing" onClick="hideSettingCenter();">< back</div>
+      <div class="options options-area">
+        <div>
+          <p>Random words</p>
+          <input name="random" type="radio" value="random-word" />
+        </div>
+        <div>
+          <p>Random Characters</p>
+          <input name="random" type="radio" value="char" />
+        </div>
+        <div>
+          <p>Random Numbers</p>
+          <input name="random" type="radio" value="num" />
+        </div>
+        <div>
+          <p>Random Symbols</p>
+          <input name="random" type="radio" value="sym" />
         </div>
       </div>
     </div>
@@ -63,8 +101,29 @@
       <div id="theme-area"></div>
     </div>
     <div id="footer">
-      <a href="https://github.com/briano1905/typings#typings" target="_blank" tabindex="3">user guide</a>/
-      <div id="show-themes"class="button" onClick="showThemeCenter();" tabindex="4">themes</div>
+      <a
+        href="https://github.com/briano1905/typings#typings"
+        target="_blank"
+        tabindex="3"
+        >user guide</a
+      >/
+      <div
+        id="show-themes"
+        class="button"
+        onClick="showThemeCenter();"
+        tabindex="4"
+      >
+        themes
+      </div>
+      /
+      <div
+        id="show-settings"
+        class="button"
+        onClick="showSettingsCenter();"
+        tabindex="4"
+      >
+        settings
+      </div>
     </div>
     <script src="main.js"></script>
   </body>
