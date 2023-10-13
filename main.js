@@ -7,7 +7,7 @@ const inputs = document.querySelectorAll("#settings input")
 let typingMode = 'wordcount';
 let wordCount;
 let timeCount;
-let randomType = "random-word"
+let randomType;
 
 // Initialize dynamic variables
 let randomWords = [];
@@ -20,16 +20,32 @@ let timerActive = false;
 let punctuation = false;
 
 
-// my code
 let alpha = "abcdefghijklmnopqrstuvwxy"
 let capAlpha = "ABCDEFGHIJKLMNOPQRSTUVWXY"
 let numbers = "0123456789"
 let symbols = `~!@#$%^&*-_+="':;,.<>?/()[]{}`
 
+
 const randAlpha = () => alpha[parseInt(Math.random() * alpha.length)]
 const randCapAlpha = () => capAlpha[parseInt(Math.random() * capAlpha.length)]
 const randNum = () => numbers[parseInt(Math.random() * numbers.length)]
 const randSym = () => symbols[parseInt(Math.random() * symbols.length)]
+
+
+
+randomType = getCookie("randomType")
+setLanguage(randomType || "w-200")
+// Get cookies
+getCookie('theme') === '' ? setTheme('light') : setTheme(getCookie('theme'));
+// getCookie('language') === '' ? setLanguage('w-200') : setLanguage(getCookie('randomType'));
+getCookie('wordCount') === '' ? setWordCount(50) : setWordCount(getCookie('wordCount'));
+getCookie('timeCount') === '' ? setTimeCount(60) : setTimeCount(getCookie('timeCount'));
+getCookie('typingMode') === '' ? setTypingMode('wordcount') : setTypingMode(getCookie('typingMode'));
+getCookie('punctuation') === '' ? setPunctuation('false') : setPunctuation(getCookie('punctuation'));
+// setLanguage('w-200')
+
+
+// my code
 
 function makeWord(includeNum = false, includeSym = false, includeBra = false) {
   let wordLen = parseInt(Math.random() * 3) + 3
@@ -37,7 +53,8 @@ function makeWord(includeNum = false, includeSym = false, includeBra = false) {
   let randFun;
 
   switch (randomType) {
-    case "random-word": {
+
+    case "w-200": case "w-1000": case "w-10000": {
       return randomWords[Math.floor(Math.random() * randomWords.length)];
     }
     case "char": randFun = randAlpha; break;
@@ -57,22 +74,24 @@ console.log(inputs)
 inputs.forEach(input => {
   document.addEventListener('change', (e) => {
     console.log(e.target.value)
+
+    switch (e.target.value) {
+      case "w-200":
+      case "w-1000":
+      case "w-10000":
+        setLanguage(e.target.value);
+        // setText();
+        randomType = e.target.value;
+
+        setCookie('randomType', e.target.value, 90)
+        return;
+        break;
+    }
     randomType = e.target.value
     setText();
     setCookie('randomType', e.target.value, 90)
   })
 })
-
-
-// Get cookies
-getCookie('theme') === '' ? setTheme('light') : setTheme(getCookie('theme'));
-getCookie('language') === '' ? setLanguage('english') : setLanguage(getCookie('language'));
-getCookie('wordCount') === '' ? setWordCount(50) : setWordCount(getCookie('wordCount'));
-getCookie('timeCount') === '' ? setTimeCount(60) : setTimeCount(getCookie('timeCount'));
-getCookie('typingMode') === '' ? setTypingMode('wordcount') : setTypingMode(getCookie('typingMode'));
-getCookie('punctuation') === '' ? setPunctuation('false') : setPunctuation(getCookie('punctuation'));
-getCookie('randomType') === '' ? randomType = 'random-word' : randomType = getCookie("randomType")
-
 
 // Find a list of words and display it to textDisplay
 function setText(e) {
@@ -97,13 +116,6 @@ function setText(e) {
       textDisplay.innerHTML = '';
       if (!keepWordList) {
         wordList = [];
-        // while (wordList.length < wordCount) {
-        //   const randomWord = randomWords[Math.floor(Math.random() * randomWords.length)];
-        //   if (wordList[wordList.length - 1] !== randomWord || wordList[wordList.length - 1] === undefined || getCookie('language') === 'dots') {
-        //     wordList.push(randomWord);
-        //   }
-        // }
-
         while (wordList.length < wordCount) {
           const randomWord = makeWord();
           if (wordList[wordList.length - 1] !== randomWord || wordList[wordList.length - 1] === undefined || getCookie('language') === 'dots') {
@@ -187,6 +199,10 @@ inputField.addEventListener('keydown', e => {
       let inputWordSlice = inputField.value + e.key;
       let currentWordSlice = wordList[currentWord].slice(0, inputWordSlice.length);
       inputField.className = inputWordSlice === currentWordSlice ? '' : 'wrong';
+      if (inputWordSlice != currentWordSlice && inputWordSlice.length == currentWordSlice.length) {
+        console.log(inputWordSlice[inputWordSlice.length - 1], currentWordSlice[currentWordSlice.length - 1])
+      }
+
     } else if (e.key === 'Backspace') {
       let inputWordSlice = e.ctrlKey ? '' : inputField.value.slice(0, inputField.value.length - 1);
       let currentWordSlice = wordList[currentWord].slice(0, inputWordSlice.length);
@@ -246,6 +262,7 @@ inputField.addEventListener('keydown', e => {
           textDisplay.childNodes[currentWord].classList.add('correct');
           correctKeys += wordList[currentWord].length + 1;
         } else {
+          console.log(inputField.value, wordList[currentWord])
           textDisplay.childNodes[currentWord].classList.add('wrong');
         }
         textDisplay.childNodes[currentWord + 1].classList.add('highlight');
@@ -296,7 +313,6 @@ function showResult() {
 
 // Command actions
 document.addEventListener('keydown', e => {
-  console.log(e.altKey)
   // Modifiers Windows: [Alt], Mac: [Cmd + Ctrl]
   if (e.altKey || (e.metaKey && e.ctrlKey)) {
     // [mod + t] => Change the theme
@@ -347,7 +363,51 @@ function setTheme(_theme) {
     .catch(err => console.error(err));
 }
 
-function setLanguage(_lang) {
+function setLanguage(wordType = "w-200") {
+  console.log("setLng ###############")
+  let url;
+  switch (wordType) {
+    case "w-200": url = "./texts/w-200.json"; break;
+    case "w-1000": url = "./texts/w-1000.json"; break;
+    case "w-10000": {
+      fetch("./texts/words.json")
+        .then(response => {
+          console.log(response);
+          return response.json();
+        }).then(json => {
+          const charsOmit = ['z']
+          const charsIn = ['s']
+          const and = []
+          const or = []
+          randomWords = json.filter(
+            word => word.length > 3
+              && word.length < 7
+              && charsOmit.every(ch => !word.includes(ch))
+              && and.every(ch => word.includes(ch))
+              && (or.length > 0 ? or.some(ch => word.includes(ch)) : true)
+
+          )
+          setText();
+          return;
+        })
+        .catch(err => console.error(err));
+    }
+  }
+  fetch(url)
+    .then(response => {
+      console.log(response);
+      return response.json();
+    }).then(json => {
+      console.log(json)
+      randomWords = json;
+      setText();
+    })
+    .catch(err => console.error(err));
+
+
+}
+
+function setLanguageold(_lang) {
   const lang = _lang.toLowerCase();
   // fetch('texts/random.json')
   fetch("./texts/words.json")
@@ -373,7 +433,18 @@ function setLanguage(_lang) {
       //   console.error(`language ${lang} is undefine`);
       // }
 
-      randomWords = json.filter(word => word.length < 6)
+      const charsOmit = ['z']
+      const charsIn = ['s']
+      const and = []
+      const or = []
+      randomWords = json.filter(
+        word => word.length > 1
+          && word.length < 7
+          && charsOmit.every(ch => !word.includes(ch))
+          && and.every(ch => word.includes(ch))
+        // && (or.length > 0 ? or.some(ch => word.includes(ch)) : true)
+      )
+
       // randomWords = json.filter(word => word.includes("s") && word.includes("a") && word.length >= 7)
 
       console.log(randomWords)
